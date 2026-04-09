@@ -63,7 +63,6 @@ jobs:
           gcloud run jobs execute documenso-migrate \
             --region=${{ env.GCP_REGION }} \
             --project=${{ env.GCP_PROJECT_ID }} \
-            --update-env-vars="NEXT_PRIVATE_DATABASE_URL=postgresql://documenso:${{ secrets.DOCUMENSO_DB_PASSWORD }}@127.0.0.1:5432/documenso?connection_limit=5&pool_timeout=10" \
             --wait
 
       - name: Deploy to Cloud Run
@@ -72,9 +71,6 @@ jobs:
           service: ${{ env.SERVICE_NAME }}
           region: ${{ env.GCP_REGION }}
           image: ${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.tag }}
-          env_vars: |
-            NEXT_PRIVATE_DATABASE_URL=postgresql://documenso:${{ secrets.DOCUMENSO_DB_PASSWORD }}@127.0.0.1:5432/documenso?connection_limit=5&pool_timeout=10
-            NEXT_PRIVATE_DIRECT_DATABASE_URL=postgresql://documenso:${{ secrets.DOCUMENSO_DB_PASSWORD }}@127.0.0.1:5432/documenso?connection_limit=5&pool_timeout=10
 
       - name: Smoke test
         run: |
