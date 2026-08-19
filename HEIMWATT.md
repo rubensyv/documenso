@@ -78,8 +78,37 @@ Preview-URL getauscht) auf dem Handy prüfen. Erst dann mergen.
 ## Preview-Deploy
 
 Actions → „Deploy Documenso" → *Run workflow* → Branch wählen → Haken **preview**.
-Ergebnis: Revision ohne Traffic, URL `https://preview---documenso-isexjmthjq-ey.a.run.app`.
-Ein Embed-Link `https://esign.heim-watt.de/embed/sign/<token>#…` funktioniert dort
-1:1 mit getauschtem Host. Prod bleibt unberührt; der nächste Push auf `main` (oder
+Ergebnis: Revision ohne Traffic, Tag-URL `https://preview---documenso-isexjmthjq-ey.a.run.app`.
+Prod bleibt unberührt; der nächste Push auf `main` (oder
 `gcloud run services update-traffic documenso --region europe-west3 --to-latest`)
 gibt den Stand frei.
+
+Drei Dinge, die man wissen muss:
+
+1. **Die Tag-URL ist im Browser nicht direkt benutzbar.** Die App kennt nur ihre
+   Prod-URL (`NEXT_PUBLIC_WEBAPP_URL=https://esign.heim-watt.de`) und schickt
+   Session-, tRPC- und PDF-Requests dorthin → CORS-Fehler, das Dokument lädt nie.
+   Testen deshalb mit Playwright: Seite unter dem **Prod-Origin** öffnen und alle
+   Requests an `https://esign.heim-watt.de/**` per `page.route` auf den Preview-Host
+   umschreiben (`route.fetch({ url })` + `route.fulfill({ response })` — nicht
+   `route.continue({ url })`, das wertet WebKit als Cross-Origin-Redirect). Beispiel:
+   Probe-Spec `_probe-guided.spec.ts` aus der Messreihe vom 19.08.2026 (Session-
+   Scratchpad). Kein echter Browser-Test auf dem Handy möglich, ohne die
+   Prod-URL-Variablen der Revision zu ändern — und das würde auf Prod durchschlagen (Punkt 2).
+2. **Jede Preview-Revision ändert das Service-Template** (Image und alle per
+   `--update-env-vars` gesetzten Variablen). Cloud Run baut die nächste Revision
+   immer auf dem zuletzt erstellten Template auf — ein späteres `gcloud run deploy`
+   *und* ein `terraform apply` (Image steht in `ignore_changes`, Traffic ist dort nicht
+   konfiguriert → 100 % auf die neue Revision) rollen damit das Preview-Image aus.
+   Reihenfolge also: Preview testen → mergen (normales Deploy mit Traffic) → erst
+   danach Terraform anfassen. Niemals Prod-URLs in einer Preview-Revision umbiegen.
+3. **Laufzeit-Schalter auf der Preview setzen:** das Workflow-Deploy erbt die Env des
+   Templates. Soll ein neues Flag nur auf der Preview an sein, die Revision von Hand
+   nachziehen — Image-Tag = kurzer Commit-Hash des Workflow-Laufs:
+   ```bash
+   gcloud run deploy documenso --project heimwatt-app-ffe6c --region europe-west3 \
+     --image europe-west3-docker.pkg.dev/heimwatt-app-ffe6c/heimwatt/documenso:<sha8> \
+     --no-traffic --tag preview --update-env-vars NEXT_PUBLIC_HEIMWATT_GUIDED_SIGNING=true
+   ```
+   Danach muss dasselbe Flag in Terraform stehen (Backend-PR), sonst meldet der
+   nächste Plan Drift.
