@@ -120,13 +120,14 @@ export const GuidedSigningBar = ({
             <StepDots current={stepNumber} />
 
             <div className="flex flex-col gap-0.5">
-              <p className="truncate font-semibold text-foreground text-sm leading-tight">
+              <p className="line-clamp-2 font-semibold text-foreground text-sm leading-tight">
                 {step.kind === 'draw' && <Trans>Create your signature</Trans>}
                 {step.kind === 'field' && <FieldStepTitle index={step.index} total={step.total} />}
                 {step.kind === 'complete' && <CompleteStepTitle total={step.total} />}
               </p>
 
-              <p className="truncate text-muted-foreground text-xs">
+              {/* Secondary line — dropped on very narrow iframes (iPhone SE in the esign shell is 296px). */}
+              <p className="hidden truncate text-muted-foreground text-xs min-[340px]:block">
                 {step.kind === 'draw' && <Trans>Draw it once with your finger</Trans>}
                 {step.kind === 'field' && <Trans>Tap the highlighted field in the document</Trans>}
                 {step.kind === 'complete' && <Trans>Finish to sign bindingly</Trans>}

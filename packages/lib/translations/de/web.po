@@ -4736,7 +4736,7 @@ msgstr "Zeichnen"
 
 #: apps/remix/app/components/embed/heimwatt/guided-signing-bar.tsx
 msgid "Draw it once with your finger"
-msgstr "Einmal mit dem Finger zeichnen"
+msgstr "Mit dem Finger zeichnen"
 
 #: apps/remix/app/components/general/admin-global-settings-section.tsx
 msgid "Draw signature"
@@ -5818,7 +5818,7 @@ msgstr "Nach Status filtern"
 
 #: apps/remix/app/components/embed/heimwatt/guided-signing-bar.tsx
 msgid "Finish to sign bindingly"
-msgstr "Jetzt verbindlich abschließen"
+msgstr "Verbindlich abschließen"
 
 #: apps/remix/app/components/forms/branding-preferences-form.tsx
 msgid "Focus ring colour."
@@ -10700,7 +10700,7 @@ msgstr "Feld {index} von {total} antippen"
 
 #: apps/remix/app/components/embed/heimwatt/guided-signing-bar.tsx
 msgid "Tap the highlighted field in the document"
-msgstr "Markiertes Feld im Dokument antippen"
+msgstr "Markiertes Feld antippen"
 
 #: apps/remix/app/components/dialogs/admin-swap-subscription-dialog.tsx
 msgid "Target Organisation"
