@@ -122,12 +122,8 @@ export const GuidedSigningBar = ({
             <div className="flex flex-col gap-0.5">
               <p className="truncate font-semibold text-foreground text-sm leading-tight">
                 {step.kind === 'draw' && <Trans>Create your signature</Trans>}
-                {step.kind === 'field' && (
-                  <Trans>
-                    Tap field {step.index} of {step.total}
-                  </Trans>
-                )}
-                {step.kind === 'complete' && <Trans>All {step.total} fields set</Trans>}
+                {step.kind === 'field' && <FieldStepTitle index={step.index} total={step.total} />}
+                {step.kind === 'complete' && <CompleteStepTitle total={step.total} />}
               </p>
 
               <p className="truncate text-muted-foreground text-xs">
@@ -182,6 +178,17 @@ export const GuidedSigningBar = ({
     </>
   );
 };
+
+// Lingui needs plain identifiers as placeholders to name them in the msgid
+// (`{index}`, `{total}`); member expressions like `{step.index}` would become
+// `{0}`/`{1}` and miss the German catalogue entry.
+const FieldStepTitle = ({ index, total }: { index: number; total: number }) => (
+  <Trans>
+    Tap field {index} of {total}
+  </Trans>
+);
+
+const CompleteStepTitle = ({ total }: { total: number }) => <Trans>All {total} fields set</Trans>;
 
 const STEPS = [1, 2, 3] as const;
 
