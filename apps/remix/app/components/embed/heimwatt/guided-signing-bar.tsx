@@ -126,8 +126,10 @@ export const GuidedSigningBar = ({
                 {step.kind === 'complete' && <CompleteStepTitle total={step.total} />}
               </p>
 
-              {/* Secondary line — dropped on very narrow iframes (iPhone SE in the esign shell is 296px). */}
-              <p className="hidden truncate text-muted-foreground text-xs min-[340px]:block">
+              {/* Secondary line — dropped on very narrow iframes (iPhone SE in the esign
+                  shell is 296px). Written as a raw media variant: `min-[340px]:` is
+                  disabled by the `print: { raw }` screen in the Tailwind config. */}
+              <p className="hidden truncate text-muted-foreground text-xs [@media(min-width:340px)]:block">
                 {step.kind === 'draw' && <Trans>Draw it once with your finger</Trans>}
                 {step.kind === 'field' && <Trans>Tap the highlighted field in the document</Trans>}
                 {step.kind === 'complete' && <Trans>Finish to sign bindingly</Trans>}
