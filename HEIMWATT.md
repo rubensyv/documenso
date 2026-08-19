@@ -98,10 +98,12 @@ Drei Dinge, die man wissen muss:
 2. **Jede Preview-Revision ändert das Service-Template** (Image und alle per
    `--update-env-vars` gesetzten Variablen). Cloud Run baut die nächste Revision
    immer auf dem zuletzt erstellten Template auf — ein späteres `gcloud run deploy`
-   *und* ein `terraform apply` (Image steht in `ignore_changes`, Traffic ist dort nicht
-   konfiguriert → 100 % auf die neue Revision) rollen damit das Preview-Image aus.
-   Reihenfolge also: Preview testen → mergen (normales Deploy mit Traffic) → erst
-   danach Terraform anfassen. Niemals Prod-URLs in einer Preview-Revision umbiegen.
+   mit Traffic erbt es, und auch `terraform apply` arbeitet mit dem Preview-Image
+   (das Image steht in `ignore_changes`, Terraform nimmt den Live-Wert; Traffic
+   verwaltet Terraform nicht, was die neue Revision bekommt ist also nicht
+   garantiert). Reihenfolge deshalb: Preview testen → mergen (normales Deploy mit
+   Traffic) → erst danach Terraform anfassen. Niemals Prod-URLs in einer
+   Preview-Revision umbiegen.
 3. **Laufzeit-Schalter auf der Preview setzen:** das Workflow-Deploy erbt die Env des
    Templates. Soll ein neues Flag nur auf der Preview an sein, die Revision von Hand
    nachziehen — Image-Tag = kurzer Commit-Hash des Workflow-Laufs:
