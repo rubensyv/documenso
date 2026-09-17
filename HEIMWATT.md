@@ -40,6 +40,25 @@ man in sechs Monaten zuerst aufschlägt.
 | ↳ Einhängepunkt | `apps/remix/app/components/embed/embed-document-signing-page-v1.tsx` (Block `// heimWatt:`) | Rendert die Leiste, blendet das Widget unter `md` aus, wenn sie aktiv ist. | Merge-Konflikt hier möglich; Block nach dem Merge sinngemäß wieder einsetzen |
 | ↳ Signatur-Dialog | `packages/ui/primitives/signature-pad/signature-pad-dialog.tsx` (Props `open`/`onOpenChange`/`hideTrigger`) | Leiste öffnet das Pad von ihrem eigenen Knopf aus. Ohne die Props = Upstream-Verhalten. | Props noch vorhanden? Dialog-Block wurde in `const dialog` ausgelagert |
 | ↳ Übersetzungen | `packages/lib/translations/{de,en}/web.po` | Deutsche Texte der Leiste (9 Einträge, Quelle `guided-signing-bar.tsx`). | `npm run translate:compile` ohne Fehler; deutsche Texte im Embed sichtbar |
+| pdf.js-Legacy-Build | `apps/remix/app/components/general/pdf-viewer/pdf-viewer.tsx` (Importe, `// heimWatt:`) | Der Standard-Build von `pdfjs-dist` setzt neue JS-APIs ohne Polyfill voraus (u. a. `ArrayBuffer.transferToFixedLength`, `Math.sumPrecise` → Firefox 137+). Auf Firefox 115 ESR (macOS 10.12–10.14, Windows 7/8) fehlten dadurch alle Texte, Seiten hingen, Unterschriftsfelder erschienen nie. Der Legacy-Build bringt die Polyfills mit. | Nach `pdfjs-dist`-Update: Importe zeigen noch auf `pdfjs-dist/legacy/build/`; Firefox 115 ESR zeigt Text |
+| Renderfehler-Signal | `packages/lib/heimwatt/render-failure.ts` (+ `.test.ts`), `apps/remix/app/components/embed/heimwatt/render-canary.ts`, `render-canary-pdf.ts`; Einhängepunkte in `pdf-viewer.tsx` (`// heimWatt:`) | Im Embed meldet der Viewer der Host-Seite per `postMessage`, wenn der Kunde Seiten ohne Inhalt sieht (siehe unten). Das Beratungsprotokoll zeigt dann Hinweis und Ausweg. | `(cd packages/lib && npx vitest run heimwatt)`; alle `heimWatt`-Blöcke in `pdf-viewer.tsx` noch vorhanden |
+
+### Embed-Event `document-render-failed`
+
+Nur im Embed (`window.parent !== window`), zusätzlich zu Documensos Events:
+
+```ts
+{ action: 'document-render-failed', data: { reason, pageNumber?: number } }
+```
+
+| `reason` | Auslöser |
+|---|---|
+| `document-load-failed` | PDF nicht ladbar oder nicht lesbar |
+| `page-render-failed` | pdf.js lehnt das Rendern einer Seite ab |
+| `page-render-timeout` | Seite nach `PAGE_RENDER_TIMEOUT_MS` (20 s) nicht fertig; gemessen 39–59 ms je Seite in Firefox 115 |
+| `render-capability-failed` | Prüf-PDF mit eingebetteter Schrift ergibt keine sichtbaren Glyphen (pdf.js verwirft Schriften still; `stopAtErrors` erkennt das nicht, gemessen) |
+
+Kompatibel in beide Richtungen: Ältere Hosts ignorieren die unbekannte Action (ihr `switch` hat keinen Default), ältere Fork-Stände senden sie nie.
 
 ### Env-Schalter
 
