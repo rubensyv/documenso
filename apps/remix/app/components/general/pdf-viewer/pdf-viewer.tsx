@@ -1,14 +1,24 @@
 import type { ImageLoadingState, PageRenderData } from '@documenso/lib/client-only/providers/envelope-render-provider';
 import { PDF_VIEWER_PAGE_CLASSNAME } from '@documenso/lib/constants/pdf-viewer';
+// heimWatt: render-failure signal for the embedding page (HEIMWATT.md)
+import {
+  type EmbedRenderFailureReason,
+  isEmbedded,
+  postRenderFailure,
+  type RenderWatchdog,
+  startRenderWatchdog,
+} from '@documenso/lib/heimwatt/render-failure';
 import { cn } from '@documenso/ui/lib/utils';
 import { useToast } from '@documenso/ui/primitives/use-toast';
 import { Trans, useLingui } from '@lingui/react/macro';
 import pMap from 'p-map';
-import * as pdfjsLib from 'pdfjs-dist';
-import pdfjsWorker from 'pdfjs-dist/build/pdf.worker?url';
+// heimWatt: legacy build — the default build needs Firefox 137+ and leaves text blank on older browsers (HEIMWATT.md)
+import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs';
+import pdfjsWorker from 'pdfjs-dist/legacy/build/pdf.worker.mjs?url';
 import type React from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
+import { runRenderCanary } from '../../embed/heimwatt/render-canary';
 import type { ScrollTarget } from '../virtual-list/use-virtual-list';
 import { useVirtualList } from '../virtual-list/use-virtual-list';
 import { PdfViewerPageImage } from './pdf-viewer-page-image';
@@ -150,6 +160,9 @@ export default function PDFViewer({
         console.error(err);
         setLoadingState('error');
 
+        // heimWatt: tell the embedding page (HEIMWATT.md)
+        postRenderFailure(window, { reason: 'document-load-failed' });
+
         toast({
           title: t`Error`,
           description: t`An error occurred while loading the document.`,
@@ -167,6 +180,36 @@ export default function PDFViewer({
         void pdfRef.current.destroy();
         pdfRef.current = null;
       }
+    };
+  }, [data]);
+
+  // heimWatt: detect silently dropped fonts once per embedded viewer (HEIMWATT.md)
+  useEffect(() => {
+    if (!data || !isEmbedded(window)) {
+      return;
+    }
+
+    let isCancelled = false;
+
+    const reportCapabilityFailure = () => {
+      if (!isCancelled) {
+        postRenderFailure(window, { reason: 'render-capability-failed' });
+      }
+    };
+
+    runRenderCanary(pdfjsLib)
+      .then((isLegible) => {
+        if (!isLegible) {
+          reportCapabilityFailure();
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        reportCapabilityFailure();
+      });
+
+    return () => {
+      isCancelled = true;
     };
   }, [data]);
 
@@ -376,8 +419,22 @@ const usePdfPageImage = ({ pageNumber, pdf, scale, scaledWidth, scaledHeight }: 
   const renderedPageNumberRef = useRef<number | null>(null);
   const renderedPdfRef = useRef<pdfjsLib.PDFDocumentProxy | null>(null);
 
+  // heimWatt: report each page's render failure to the embedding page once (HEIMWATT.md)
+  const hasReportedFailureRef = useRef(false);
+
   useEffect(() => {
     let isCancelled = false;
+
+    // heimWatt: render-failure signal (HEIMWATT.md)
+    const watchdogs = new Set<RenderWatchdog>();
+
+    const reportPageFailure = (reason: EmbedRenderFailureReason) => {
+      if (isCancelled || hasReportedFailureRef.current) {
+        return;
+      }
+
+      hasReportedFailureRef.current = postRenderFailure(window, { reason, pageNumber });
+    };
 
     const cancelRenderTask = () => {
       if (!renderTaskRef.current) {
@@ -404,6 +461,10 @@ const usePdfPageImage = ({ pageNumber, pdf, scale, scaledWidth, scaledHeight }: 
 
     const renderAtResolution = async (resolution: number) => {
       let currentTask: pdfjsLib.RenderTask | null = null;
+
+      // heimWatt: a render that never settles leaves the page spinning forever (HEIMWATT.md)
+      const watchdog = startRenderWatchdog(() => reportPageFailure('page-render-timeout'));
+      watchdogs.add(watchdog);
 
       try {
         if (isCancelled) {
@@ -458,8 +519,13 @@ const usePdfPageImage = ({ pageNumber, pdf, scale, scaledWidth, scaledHeight }: 
         if (!isCancelled) {
           console.error(err);
           setImageLoadingState('error');
+          reportPageFailure('page-render-failed'); // heimWatt
         }
       } finally {
+        // heimWatt
+        watchdog.stop();
+        watchdogs.delete(watchdog);
+
         if (renderTaskRef.current === currentTask) {
           renderTaskRef.current = null;
         }
@@ -478,6 +544,11 @@ const usePdfPageImage = ({ pageNumber, pdf, scale, scaledWidth, scaledHeight }: 
       if (idleTimerRef.current) {
         clearTimeout(idleTimerRef.current);
         idleTimerRef.current = null;
+      }
+
+      // heimWatt
+      for (const watchdog of watchdogs) {
+        watchdog.stop();
       }
 
       cancelRenderTask();
