@@ -7,18 +7,19 @@ on:
     inputs:
       preview:
         description: >-
-          Preview: Revision ohne Traffic unter dem Tag "preview" deployen
-          (URL https://preview---documenso-isexjmthjq-ey.a.run.app). Prod bleibt unberührt.
-          Ohne Haken = normales Deploy mit Traffic.
+          Preview: Revision ohne Traffic unter dem Tag "preview" deployen.
+          Prod bleibt unberührt. Ohne Haken = normales Deploy mit Traffic.
         type: boolean
         default: false
 
+# Betriebsangaben kommen aus Repo-Secrets, damit sie weder im öffentlichen
+# Repo stehen noch im Klartext in den Action-Logs erscheinen.
 env:
-  GCP_PROJECT_ID: heimwatt-app-ffe6c
-  GCP_REGION: europe-west3
-  REGISTRY: europe-west3-docker.pkg.dev
-  IMAGE_NAME: europe-west3-docker.pkg.dev/heimwatt-app-ffe6c/heimwatt/documenso
-  SERVICE_NAME: documenso
+  GCP_REGION: ${{ secrets.GCP_REGION }}
+  REGISTRY: ${{ secrets.GCP_REGION }}-docker.pkg.dev
+  IMAGE_NAME: ${{ secrets.IMAGE_NAME }}
+  SERVICE_NAME: ${{ secrets.CLOUD_RUN_SERVICE }}
+  PRODUCTION_URL: ${{ secrets.PRODUCTION_URL }}
 
 permissions:
   contents: read
@@ -35,7 +36,7 @@ jobs:
         uses: google-github-actions/auth@v2
         with:
           workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER_PRODUCTION }}
-          service_account: github-actions@heimwatt-app-ffe6c.iam.gserviceaccount.com
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -67,9 +68,7 @@ jobs:
       # aufgerufene Job documenso-migrate war defekt (fehlendes --schema) und
       # dadurch wirkungslos — er ist entfernt.
       # Preview (workflow_dispatch mit Haken): Revision ohne Traffic, erreichbar
-      # nur über die Tag-URL. Zum Freigeben später Traffic umschalten:
-      #   gcloud run services update-traffic documenso --region europe-west3 --to-latest
-      # oder einfach auf main mergen (normales Deploy).
+      # nur über die Tag-URL. Freigabe: auf main mergen (normales Deploy).
       - name: Deploy to Cloud Run
         id: deploy
         uses: google-github-actions/deploy-cloudrun@v2
@@ -82,7 +81,7 @@ jobs:
 
       - name: Smoke test
         run: |
-          URL="${{ inputs.preview == true && steps.deploy.outputs.url || 'https://esign.heim-watt.de' }}/api/health"
+          URL="${{ inputs.preview == true && steps.deploy.outputs.url || env.PRODUCTION_URL }}/api/health"
           echo "Checking $URL"
           for i in $(seq 1 10); do
             STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$URL" 2>/dev/null || echo "000")
