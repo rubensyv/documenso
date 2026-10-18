@@ -37,6 +37,9 @@ jobs:
         with:
           workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER_PRODUCTION }}
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          # Explizit aus einem Secret: auth exportiert die Projekt-ID in die Env
+          # jedes Folgeschritts, und nur ein vollständiger Secret-Wert wird maskiert.
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
