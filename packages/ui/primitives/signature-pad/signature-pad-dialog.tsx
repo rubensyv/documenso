@@ -61,8 +61,18 @@ export const SignaturePadDialog = ({
     onOpenChange?.(next);
   };
 
+  // Upstream discards unconfirmed drafts whenever the dialog opens or closes.
+  const handleOpenChange = (open: boolean) => {
+    if (disabled) {
+      return;
+    }
+
+    setSignature(value ?? '');
+    setShowSignatureModal(open);
+  };
+
   const dialog = (
-    <Dialog open={showSignatureModal} onOpenChange={disabled ? undefined : setShowSignatureModal}>
+    <Dialog open={showSignatureModal} onOpenChange={handleOpenChange}>
       <DialogContent hideClose={true} className="p-6 pt-4">
         <SignaturePad
           id="signature"
@@ -88,6 +98,8 @@ export const SignaturePadDialog = ({
             disabled={!signature}
             onClick={() => {
               onChange(signature);
+              // heimWatt: keep the confirmed draft — in controlled mode the
+              // guided bar reopens without going through handleOpenChange.
               setShowSignatureModal(false);
             }}
           >
@@ -124,7 +136,7 @@ export const SignaturePadDialog = ({
         type="button"
         disabled={disabled}
         className="absolute inset-0 flex items-center justify-center bg-transparent"
-        onClick={() => setShowSignatureModal(true)}
+        onClick={() => handleOpenChange(true)}
         whileHover="onHover"
       >
         {!value && !disableAnimation && (
