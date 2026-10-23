@@ -40,7 +40,6 @@ man in sechs Monaten zuerst aufschlägt.
 | ↳ Einhängepunkt | `apps/remix/app/components/embed/embed-document-signing-page-v1.tsx` (Block `// heimWatt:`) | Rendert die Leiste, blendet das Widget unter `md` aus, wenn sie aktiv ist. | Merge-Konflikt hier möglich; Block nach dem Merge sinngemäß wieder einsetzen |
 | ↳ Signatur-Dialog | `packages/ui/primitives/signature-pad/signature-pad-dialog.tsx` (Props `open`/`onOpenChange`/`hideTrigger`) | Leiste öffnet das Pad von ihrem eigenen Knopf aus. Ohne die Props = Upstream-Verhalten. | Props noch vorhanden? Dialog-Block wurde in `const dialog` ausgelagert |
 | ↳ Übersetzungen | `packages/lib/translations/{de,en}/web.po` | Deutsche Texte der Leiste (9 Einträge, Quelle `guided-signing-bar.tsx`). | `npm run translate:compile` ohne Fehler; deutsche Texte im Embed sichtbar |
-| pdf.js-Legacy-Build | `apps/remix/app/components/general/pdf-viewer/pdf-viewer.tsx` (Importe, `// heimWatt:`) | Der Standard-Build von `pdfjs-dist` setzt neue JS-APIs ohne Polyfill voraus (u. a. `ArrayBuffer.transferToFixedLength`, `Math.sumPrecise` → Firefox 137+). Auf Firefox 115 ESR (macOS 10.12–10.14, Windows 7/8) fehlten dadurch alle Texte, Seiten hingen, Unterschriftsfelder erschienen nie. Der Legacy-Build bringt die Polyfills mit. | Nach `pdfjs-dist`-Update: Importe zeigen noch auf `pdfjs-dist/legacy/build/`; Firefox 115 ESR zeigt Text |
 | Renderfehler-Signal | `packages/lib/heimwatt/render-failure.ts` (+ `.test.ts`), `apps/remix/app/components/embed/heimwatt/render-canary.ts`, `render-canary-pdf.ts`; Einhängepunkte in `pdf-viewer.tsx` (`// heimWatt:`) | Im Embed meldet der Viewer der Host-Seite per `postMessage`, wenn der Kunde Seiten ohne Inhalt sieht (siehe unten). Die Host-Seite zeigt dann Hinweis und Ausweg. | `(cd packages/lib && npx vitest run heimwatt)`; alle `heimWatt`-Blöcke in `pdf-viewer.tsx` noch vorhanden |
 
 ### Embed-Event `document-render-failed`
@@ -75,7 +74,7 @@ und `embedSigningWhiteLabel`.
 git fetch upstream --tags
 git switch -c chore/sync-vX.Y.Z origin/main
 git merge vX.Y.Z            # Konflikte erwartet in: embed-document-signing-page-v1.tsx,
-                            # signature-pad-dialog.tsx, ggf. web.po (de/en)
+                            # signature-pad-dialog.tsx, pdf-viewer.tsx, ggf. web.po (de/en)
 npm ci && (cd packages/prisma && npx prisma generate)
 (cd packages/lib && npx vitest run heimwatt)          # Schritt-Logik
 (cd apps/remix && npm run typecheck)
