@@ -82,10 +82,22 @@ jobs:
           image: ${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.tag }}
           no_traffic: ${{ inputs.preview == true }}
           tag: ${{ inputs.preview == true && 'preview' || '' }}
+          # Ein Preview-Deploy (--no-traffic) heftet den Traffic fest an die
+          # damals aktive Revision; ein normales Deploy verschiebt ihn danach
+          # nicht mehr von selbst. LATEST=100 holt ihn ausdrücklich zurück.
+          revision_traffic: ${{ inputs.preview != true && 'LATEST=100' || '' }}
 
       - name: Smoke test
         if: inputs.preview != true
         run: |
+          gcloud run services describe "$SERVICE_NAME" --region "$GCP_REGION" --format=json > service.json
+          LATEST=$(jq -r '.status.latestCreatedRevisionName' service.json)
+          SERVING=$(jq -r '[.status.traffic[] | select(.percent == 100) | .revisionName][0] // empty' service.json)
+          if [ "$SERVING" != "$LATEST" ]; then
+            echo "Traffic is not on the new revision $LATEST (serving: ${SERVING:-split})"
+            exit 1
+          fi
+
           URL="${{ env.PRODUCTION_URL }}/api/health"
           echo "Checking $URL"
           for i in $(seq 1 10); do
