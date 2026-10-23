@@ -1698,6 +1698,10 @@ msgstr "AI 기능이 현재 팀에서 비활성화되어 있습니다. 팀 소�
 msgid "All"
 msgstr "전체"
 
+#: apps/remix/app/components/embed/heimwatt/guided-signing-bar.tsx
+msgid "All {total} fields set"
+msgstr ""
+
 #: apps/remix/app/routes/_authenticated+/admin+/organisation-stats._index.tsx
 #: apps/remix/app/routes/_authenticated+/admin+/organisation-stats._index.tsx
 msgid "All claims"
@@ -3150,6 +3154,7 @@ msgstr "모든 요금제와 기능을 자세히 비교합니다."
 #: apps/remix/app/components/embed/embed-direct-template-client-page.tsx
 #: apps/remix/app/components/embed/embed-document-signing-page-v1.tsx
 #: apps/remix/app/components/embed/embed-document-signing-page-v1.tsx
+#: apps/remix/app/components/embed/heimwatt/guided-signing-bar.tsx
 #: apps/remix/app/components/embed/multisign/multi-sign-document-signing-view.tsx
 #: apps/remix/app/components/general/document-signing/document-signing-complete-dialog.tsx
 #: apps/remix/app/components/general/document-signing/document-signing-complete-dialog.tsx
@@ -3789,6 +3794,10 @@ msgstr "계정을 만들고 최첨단 전자 서명 서비스를 사용해 보�
 #: apps/remix/app/components/forms/signup.tsx
 msgid "Create your account and start using state-of-the-art document signing. Open and beautiful signing is within your grasp."
 msgstr "계정을 만들고 최첨단 전자 서명 서비스를 시작하세요. 개방적이고 아름다운 서명이 당신의 손 안에 있습니다."
+
+#: apps/remix/app/components/embed/heimwatt/guided-signing-bar.tsx
+msgid "Create your signature"
+msgstr ""
 
 #: apps/remix/app/components/dialogs/public-profile-template-manage-dialog.tsx
 #: apps/remix/app/components/general/document/document-page-view-information.tsx
@@ -5189,11 +5198,16 @@ msgstr "드래그 앤 드롭 또는 클릭하여 업로드"
 msgid "Drag and drop your document here"
 msgstr "문서를 이곳에 드래그해서 놓아 주세요."
 
+#: apps/remix/app/components/embed/heimwatt/guided-signing-bar.tsx
 #: packages/lib/constants/document.ts
 #: packages/ui/primitives/signature-pad/signature-pad.tsx
 msgctxt "Draw signature"
 msgid "Draw"
 msgstr "그리기"
+
+#: apps/remix/app/components/embed/heimwatt/guided-signing-bar.tsx
+msgid "Draw it once with your finger"
+msgstr ""
 
 #: apps/remix/app/components/general/admin-global-settings-section.tsx
 msgid "Draw signature"
@@ -6320,6 +6334,10 @@ msgstr "새 구독 클레임을 생성하려면 세부 정보를 입력하세요
 msgid "Filter by status"
 msgstr "상태로 필터링"
 
+#: apps/remix/app/components/embed/heimwatt/guided-signing-bar.tsx
+msgid "Finish to sign bindingly"
+msgstr ""
+
 #: apps/remix/app/components/forms/branding-preferences-form.tsx
 msgid "Focus ring colour."
 msgstr "포커스 링 색상입니다."
@@ -6546,6 +6564,10 @@ msgstr "홈으로 가기"
 #: apps/remix/app/components/general/document/document-certificate-qr-view.tsx
 msgid "Go to document"
 msgstr "문서로 이동"
+
+#: apps/remix/app/components/embed/heimwatt/guided-signing-bar.tsx
+msgid "Go to field"
+msgstr ""
 
 #: packages/ui/primitives/data-table-pagination.tsx
 msgid "Go to first page"
@@ -11249,6 +11271,10 @@ msgstr ""
 msgid "Signing order is enabled."
 msgstr "서명 순서가 활성화되어 있습니다."
 
+#: apps/remix/app/components/embed/heimwatt/guided-signing-bar.tsx
+msgid "Signing progress"
+msgstr ""
+
 #: apps/remix/app/components/general/envelope-editor/envelope-editor-settings-dialog.tsx
 msgid "Signing Reminders"
 msgstr "서명 알림"
@@ -11759,6 +11785,14 @@ msgstr "시스템 요구 사항"
 #: apps/remix/app/components/general/app-command-menu.tsx
 msgid "System Theme"
 msgstr "시스템 테마"
+
+#: apps/remix/app/components/embed/heimwatt/guided-signing-bar.tsx
+msgid "Tap field {index} of {total}"
+msgstr ""
+
+#: apps/remix/app/components/embed/heimwatt/guided-signing-bar.tsx
+msgid "Tap the highlighted field in the document"
+msgstr ""
 
 #: apps/remix/app/components/dialogs/admin-swap-subscription-dialog.tsx
 msgid "Target Organisation"

@@ -1698,6 +1698,10 @@ msgstr "Funkcje AI są wyłączone w zespole. Poproś właściciela zespołu lub
 msgid "All"
 msgstr "Wszystko"
 
+#: apps/remix/app/components/embed/heimwatt/guided-signing-bar.tsx
+msgid "All {total} fields set"
+msgstr ""
+
 #: apps/remix/app/routes/_authenticated+/admin+/organisation-stats._index.tsx
 #: apps/remix/app/routes/_authenticated+/admin+/organisation-stats._index.tsx
 msgid "All claims"
@@ -3150,6 +3154,7 @@ msgstr "Porównaj wszystkie plany i funkcje"
 #: apps/remix/app/components/embed/embed-direct-template-client-page.tsx
 #: apps/remix/app/components/embed/embed-document-signing-page-v1.tsx
 #: apps/remix/app/components/embed/embed-document-signing-page-v1.tsx
+#: apps/remix/app/components/embed/heimwatt/guided-signing-bar.tsx
 #: apps/remix/app/components/embed/multisign/multi-sign-document-signing-view.tsx
 #: apps/remix/app/components/general/document-signing/document-signing-complete-dialog.tsx
 #: apps/remix/app/components/general/document-signing/document-signing-complete-dialog.tsx
@@ -3789,6 +3794,10 @@ msgstr "Utwórz konto i skorzystaj z najnowocześniejszego rozwiązania do podpi
 #: apps/remix/app/components/forms/signup.tsx
 msgid "Create your account and start using state-of-the-art document signing. Open and beautiful signing is within your grasp."
 msgstr "Utwórz konto i zacznij korzystać z nowoczesnego podpisywania dokumentów. Otwarty i piękny podpis jest w zasięgu ręki."
+
+#: apps/remix/app/components/embed/heimwatt/guided-signing-bar.tsx
+msgid "Create your signature"
+msgstr ""
 
 #: apps/remix/app/components/dialogs/public-profile-template-manage-dialog.tsx
 #: apps/remix/app/components/general/document/document-page-view-information.tsx
@@ -5189,11 +5198,16 @@ msgstr "Przeciągnij i upuść lub kliknij, aby przesłać"
 msgid "Drag and drop your document here"
 msgstr "Przeciągnij i upuść dokument"
 
+#: apps/remix/app/components/embed/heimwatt/guided-signing-bar.tsx
 #: packages/lib/constants/document.ts
 #: packages/ui/primitives/signature-pad/signature-pad.tsx
 msgctxt "Draw signature"
 msgid "Draw"
 msgstr "Rysowany"
+
+#: apps/remix/app/components/embed/heimwatt/guided-signing-bar.tsx
+msgid "Draw it once with your finger"
+msgstr ""
 
 #: apps/remix/app/components/general/admin-global-settings-section.tsx
 msgid "Draw signature"
@@ -6320,6 +6334,10 @@ msgstr "Uzupełnił szczegóły, aby utworzyć nową subskrypcję."
 msgid "Filter by status"
 msgstr "Filtruj według statusu"
 
+#: apps/remix/app/components/embed/heimwatt/guided-signing-bar.tsx
+msgid "Finish to sign bindingly"
+msgstr ""
+
 #: apps/remix/app/components/forms/branding-preferences-form.tsx
 msgid "Focus ring colour."
 msgstr "Kolor obramowania zaznaczenia."
@@ -6546,6 +6564,10 @@ msgstr "Przejdź do strony głównej"
 #: apps/remix/app/components/general/document/document-certificate-qr-view.tsx
 msgid "Go to document"
 msgstr "Przejdź do dokumentu"
+
+#: apps/remix/app/components/embed/heimwatt/guided-signing-bar.tsx
+msgid "Go to field"
+msgstr ""
 
 #: packages/ui/primitives/data-table-pagination.tsx
 msgid "Go to first page"
@@ -11249,6 +11271,10 @@ msgstr ""
 msgid "Signing order is enabled."
 msgstr "Kolejność podpisywania jest włączona."
 
+#: apps/remix/app/components/embed/heimwatt/guided-signing-bar.tsx
+msgid "Signing progress"
+msgstr ""
+
 #: apps/remix/app/components/general/envelope-editor/envelope-editor-settings-dialog.tsx
 msgid "Signing Reminders"
 msgstr "Przypomnienia o podpisaniu"
@@ -11759,6 +11785,14 @@ msgstr "Wymagania systemowe"
 #: apps/remix/app/components/general/app-command-menu.tsx
 msgid "System Theme"
 msgstr "Motyw systemowy"
+
+#: apps/remix/app/components/embed/heimwatt/guided-signing-bar.tsx
+msgid "Tap field {index} of {total}"
+msgstr ""
+
+#: apps/remix/app/components/embed/heimwatt/guided-signing-bar.tsx
+msgid "Tap the highlighted field in the document"
+msgstr ""
 
 #: apps/remix/app/components/dialogs/admin-swap-subscription-dialog.tsx
 msgid "Target Organisation"
