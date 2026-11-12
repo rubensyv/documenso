@@ -87,6 +87,20 @@ jobs:
           # nicht mehr von selbst. LATEST=100 holt ihn ausdrücklich zurück.
           revision_traffic: ${{ inputs.preview != true && 'LATEST=100' || '' }}
 
+      # LATEST=100 verschiebt nur den Traffic, der Tag "preview" bleibt an der
+      # alten Revision hängen. Cloud Run hält eine getaggte Revision mit ihrer
+      # Mindestinstanz dauerhaft warm: Vom 23.10. bis 12.11.2026 lief so eine
+      # zweite Instanz rund um die Uhr (rund 85 € im Monat). Mit dem normalen
+      # Deploy ist die Preview freigegeben und wird nicht mehr gebraucht.
+      - name: Remove preview tag
+        if: inputs.preview != true
+        run: |
+          TAGGED=$(gcloud run services describe "$SERVICE_NAME" --region "$GCP_REGION" --format=json \
+            | jq -r '[.status.traffic[] | select(.tag == "preview")] | length')
+          if [ "$TAGGED" -gt 0 ]; then
+            gcloud run services update-traffic "$SERVICE_NAME" --region "$GCP_REGION" --remove-tags preview
+          fi
+
       - name: Smoke test
         if: inputs.preview != true
         run: |
@@ -95,6 +109,10 @@ jobs:
           SERVING=$(jq -r '[.status.traffic[] | select(.percent == 100) | .revisionName][0] // empty' service.json)
           if [ "$SERVING" != "$LATEST" ]; then
             echo "Traffic is not on the new revision $LATEST (serving: ${SERVING:-split})"
+            exit 1
+          fi
+          if jq -e '.status.traffic[] | select(.tag == "preview")' service.json > /dev/null; then
+            echo "A revision still carries the preview tag and keeps its min instance running"
             exit 1
           fi
 
